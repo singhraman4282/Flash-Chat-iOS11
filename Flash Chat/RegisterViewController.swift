@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 
 class RegisterViewController: UIViewController {
@@ -30,14 +31,35 @@ class RegisterViewController: UIViewController {
     @IBAction func registerPressed(_ sender: AnyObject) {
         
 
+        FIRAuth.auth()?.createUser(withEmail: emailTextfield.text!, password: passwordTextfield.text!, completion: { (user, error) in
+            
+            if error != nil {
+                print(error!)
+            } else {
+                print("Registration Succesful")
+                let userDB = FIRDatabase.database().reference().child("Users")
+                let userDirectory = ["User":FIRAuth.auth()?.currentUser?.email, "Name":"Jon Snow"]
+                userDB.childByAutoId().setValue(userDirectory) {
+                    (error, reference) in
+                    if error != nil {
+                        print(error!)
+                    } else {
+                        print("User addedd succesfully")
+                        
+                        self.performSegue(withIdentifier: "goToChat", sender: self)
+                    }//else
+                    
+                }//userDB
+            }//else
+            
+        })//
         
-        //TODO: Set up a new user on our Firbase database
         
         
 
         
         
-    } 
+    }//registerPressed
     
     
 }
